@@ -3,8 +3,8 @@ from utils.to_test_fine_grad import text_process
 from utils.auto_extraction import test
 app = Flask(__name__)
 
-@app.route('/ner', methods=['POST'])
-def ner():
+@app.route('/re', methods=['POST'])
+def re():
     text = request.json.get('text', '')
     entities = request.json.get('entities', [])
     ent1_list,ent2_list,text_list,ent1_id,ent2_id= text_process(text,entities)
