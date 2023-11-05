@@ -5,3 +5,8 @@ bert-base-chinese/model.safetensors
 bert-base-chinese/tf_model.h5
 Model_Parameter/test.pth
 *.pth
+*.msgpack
+*.safetensors
+Named_Entity_Recognition/prev_trained_model/bert-base-chinese/pytorch_model.bin
+*.h5
+*.zip
