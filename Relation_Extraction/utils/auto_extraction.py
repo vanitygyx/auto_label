@@ -14,8 +14,8 @@ from transformers import BertForSequenceClassification
 import random
 
 
-def get_model(num_labels):
-    model = BertForSequenceClassification.from_pretrained('../bert-base-chinese',num_labels)
+def get_model(n):
+    model = BertForSequenceClassification.from_pretrained('bert-base-chinese',num_labels=n)
     return model
 
 #设置随机种子
@@ -28,8 +28,9 @@ def setup_seed(seed):
 warnings.filterwarnings("ignore")
 setup_seed(44)
 
-def test(net_path,text_list,ent1_list,ent2_list,num_labels,show_result=False):
+def test(net_path,text_list,ent1_list,ent2_list,show_result=False):
     rel2id, id2rel = map_id_rel()
+    num_labels = len(id2rel)
     USE_CUDA = torch.cuda.is_available()
     model=get_model(num_labels)
     if USE_CUDA:
@@ -71,9 +72,8 @@ def test(net_path,text_list,ent1_list,ent2_list,num_labels,show_result=False):
             result = predicted.cpu().numpy().tolist()[0]
             if show_result:
                 print("Source Text: ",text)
-                print("Entity1: ",ent1," Entity2: ",ent2," Predict Relation: ",id2rel[result]," True Relation: ",label)
+                print("Entity1: ",ent1," Entity2: ",ent2," Predict Relation: ")
             total+=1
             #print('\n')
             rel_list.append(id2rel[result])
     return rel_list
-
