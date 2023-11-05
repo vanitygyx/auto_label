@@ -3,13 +3,10 @@ import numpy as np
 import torch.nn.functional
 import warnings
 import torch
-import json
 from transformers import BertTokenizer
 from .loader import map_id_rel
 import warnings
-import torch
 import json
-from transformers import BertTokenizer
 from transformers import BertForSequenceClassification
 import random
 
@@ -32,17 +29,18 @@ def test(net_path,text_list,ent1_list,ent2_list,show_result=False):
     rel2id, id2rel = map_id_rel()
     num_labels = len(id2rel)
     USE_CUDA = torch.cuda.is_available()
-    model=get_model(num_labels)
+
+    net=get_model(num_labels)
+    net.eval()
     if USE_CUDA:
-        model=model.cuda()
+        net = net.cuda()
     max_length=128
+
     net=torch.load(net_path)
 
     # For only CPU device
     #net=torch.load(net_path,map_location=torch.device('cpu') )
-    net.eval()
-    if USE_CUDA:
-        net = net.cuda()
+
     rel_list = []
     total=0
     with torch.no_grad():

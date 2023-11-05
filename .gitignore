@@ -4,3 +4,4 @@ bert-base-chinese/flax_model.msgpack
 bert-base-chinese/model.safetensors
 bert-base-chinese/tf_model.h5
 Model_Parameter/test.pth
+*.pth
