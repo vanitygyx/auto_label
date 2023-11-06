@@ -29,19 +29,17 @@ MODEL_CLASSES = {
 }
 
 def predict(args, model, tokenizer, lines, message, prefix=""):
-    pred_output_dir = args.output_dir
-    if not os.path.exists(pred_output_dir) and args.local_rank in [-1, 0]:
-        os.makedirs(pred_output_dir)
     test_dataset = load_and_cache_examples(args, args.task_name, tokenizer, lines, data_type='test')
     # Note that DistributedSampler samples randomly
     test_sampler = SequentialSampler(test_dataset) if args.local_rank == -1 else DistributedSampler(test_dataset)
     test_dataloader = DataLoader(test_dataset, sampler=test_sampler, batch_size=1, collate_fn=collate_fn)
-    # Eval!
-    results = []
 
+    # Eval!
     if isinstance(model, nn.DataParallel):
         model = model.module
+    out = []
     for step, batch in enumerate(test_dataloader):
+        out[step] = []
         model.eval()
         batch = tuple(t.to(args.device) for t in batch)
         with torch.no_grad():
@@ -55,18 +53,11 @@ def predict(args, model, tokenizer, lines, message, prefix=""):
             tags  = tags.squeeze(0).cpu().numpy().tolist()
         preds = tags[0][1:-1]  # [CLS]XXXX[SEP]
         label_entities = get_entities(preds, args.id2label, args.markup)
-        index = []
-        index = [0] * len(output)
+        
         if label_entities:
             for entity in label_entities:
-                for i in range(entity[1],entity[2]+1):
-                    index[i] = name[entity[0]]  
-        for num in range(len(index)):
-            if index[num] == 0:
-                print(output[num],end="")
-            else:
-                print('\033[1;%dm%s\033[0m'%(index[num],output[num]),end="")
-        print("\n")    
+                out[step].append([message[step][entity[1]:entity[2]+1],entity[0]])
+    return out
 
 def load_and_cache_examples(args, task, tokenizer, message,data_type='train'):
     if args.local_rank not in [-1, 0] :
@@ -125,13 +116,6 @@ def main(message):
     # args.data_dir = os.path.join(absdir,args.data_dir)
     # print(args.data_dir)
 
-    time_ = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-    init_logger(log_file=args.output_dir + f'/{args.model_type}-{args.task_name}-{time_}.log')
-    if os.path.exists(args.output_dir) and os.listdir(
-            args.output_dir) and args.do_train and not args.overwrite_output_dir:
-        raise ValueError(
-            "Output directory ({}) already exists and is not empty. Use --overwrite_output_dir to overcome.".format(
-                args.output_dir))
     # Setup CUDA, GPU & distributed training
     if args.local_rank == -1 or args.no_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
@@ -142,9 +126,6 @@ def main(message):
         torch.distributed.init_process_group(backend="nccl")
         args.n_gpu = 1
     args.device = device
-    logger.warning(
-        "Process rank: %s, device: %s, n_gpu: %s, distributed training: %s, 16-bits training: %s",
-        args.local_rank, device, args.n_gpu, bool(args.local_rank != -1), args.fp16, )
     # Set seed
     seed_everything(args.seed)
     # Prepare NER task
@@ -185,10 +166,23 @@ def main(message):
             model = model_class.from_pretrained(checkpoint, config=config)
             model.to(args.device)
             lines = []
-            words = list(message)
-            labels = ['O'] * len(words)
-            lines.append({"words": words, "labels": labels})
-
-            predict(args, model, tokenizer, lines,message,prefix=prefix)
-
-
+            for m in message:
+                words = list(m)
+                labels = ['O'] * len(words)
+                lines.append({"words": words, "labels": labels})
+            predict_entities = predict(args, model, tokenizer, lines,message,prefix=prefix)
+            entities = []
+            accumulate = 0
+            for i,per_entities in enumerate(predict_entities):
+                node_flag={}
+                for entity in per_entities:
+                    node,label = entity[0],entity[1]
+                    if node not in node_flag:
+                        index = message[i].find(node)
+                        node_flag[node] = index
+                    else:
+                        index = message[i].find(node,node_flag[node]+1)
+                        node_flag[node] = index
+                    entities.append({"label":label,"start_offset":index+accumulate,"end_offset":index+len(node)+1+accumulate})
+                accumulate+=len(message[i])
+    return entities

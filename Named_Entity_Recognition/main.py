@@ -1,15 +1,13 @@
 from flask import Flask, request, jsonify
-
+from tools.to_test import text_process
+from run_ner_crf import main
 app = Flask(__name__)
 
-@app.route('/re', methods=['POST'])
-def re():
+@app.route('/ner', methods=['POST'])
+def ner():
     text = request.json.get('text', '')
-    ent1_list,ent2_list,text_list,ent1_id,ent2_id= text_process(text,entities)
-    rel_list = test("test.pth",text_list,ent1_list,ent2_list)
-    relations =[]
-    for i in range(len(rel_list)):
-        relations.append({"from_id":ent1_id[i],"to_id":ent2_id[i],"type":rel_list[i]})
+    split_text= text_process(text)
+    entities = main(split_text)
     return jsonify({'entities': entities})
 if __name__ == '__main__':      
     app.run(debug=True)
