@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
-from Named_Entity_Recognition.tools.to_test import NER_text_process
-from Named_Entity_Recognition.run_ner_crf import ner_test
-from Relation_Extraction.utils.to_test_fine_grad import RE_text_process
-from Relation_Extraction.utils.auto_extraction import re_test
+from tools.to_test import NER_text_process
+from run_ner_crf import ner_test
+from utils.to_test_fine_grad import RE_text_process
+from utils.auto_extraction import re_test
 
 app = Flask(__name__)
 
