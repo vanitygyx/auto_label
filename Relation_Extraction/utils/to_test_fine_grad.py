@@ -5,7 +5,7 @@ pattern1 = r'(？|\?|!|。|！)'
 pattern2 = r"\n|\t|\r"
 pattern3 = r"？|\?|!|。|！"
 #处理获得的一列数据text，得到不同实体匹配输入到关系抽取模型中
-def text_process(text,entities):
+def RE_text_process(text,entities):
     ent1_list,ent2_list,text_list,ent1_id,ent2_id, = [],[],[],[],[]
     splited_text = re.split(pattern3,text)
     for i in range(len(entities)):

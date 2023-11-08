@@ -1,9 +1,4 @@
-import glob
-import logging
 import os
-import json
-import time
-
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, TensorDataset
@@ -22,6 +17,8 @@ from processors.ner_seq import ner_processors as processors
 from processors.ner_seq import collate_fn
 from metrics.ner_metrics import SeqEntityScore
 from tools.finetuning_argparse import get_argparse
+
+model_path = "outputs"
 
 MODEL_CLASSES = {
     ## bert ernie bert_wwm bert_wwwm_ext
@@ -110,11 +107,8 @@ def load_and_cache_examples(args, task, tokenizer, message,data_type='train'):
     return dataset
 
 
-def main(message):
+def ner_test(message):
     args = get_argparse().parse_args()
-    # absdir = os.getcwd()
-    # args.data_dir = os.path.join(absdir,args.data_dir)
-    # print(args.data_dir)
 
     # Setup CUDA, GPU & distributed training
     if args.local_rank == -1 or args.no_cuda:
@@ -153,36 +147,26 @@ def main(message):
     model.to(args.device)
     #Prediction
     if args.local_rank in [-1, 0]:
-        tokenizer = tokenizer_class.from_pretrained(args.output_dir, do_lower_case=args.do_lower_case)
-        checkpoints = [args.output_dir]
-        if args.predict_checkpoints > 0:
-            checkpoints = list(
-                os.path.dirname(c) for c in sorted(glob.glob(args.output_dir + '/**/' + WEIGHTS_NAME, recursive=True)))
-            logging.getLogger("transformers.modeling_utils").setLevel(logging.WARN)  # Reduce logging
-            checkpoints = [x for x in checkpoints if x.split('-')[-1] == str(args.predict_checkpoints)]
-        logger.info("Predict the following checkpoints: %s", checkpoints)
-        for checkpoint in checkpoints:
-            prefix = checkpoint.split('/')[-1] if checkpoint.find('checkpoint') != -1 else ""
-            model = model_class.from_pretrained(checkpoint, config=config)
-            model.to(args.device)
-            lines = []
-            for m in message:
-                words = list(m)
-                labels = ['O'] * len(words)
-                lines.append({"words": words, "labels": labels})
-            predict_entities = predict(args, model, tokenizer, lines,message,prefix=prefix)
-            entities = []
-            accumulate = 0
-            for i,per_entities in enumerate(predict_entities):
-                node_flag={}
-                for entity in per_entities:
-                    node,label = entity[0],entity[1]
-                    if node not in node_flag:
-                        index = message[i].find(node)
-                        node_flag[node] = index
-                    else:
-                        index = message[i].find(node,node_flag[node]+1)
-                        node_flag[node] = index
-                    entities.append({"label":label,"start_offset":index+accumulate,"end_offset":index+len(node)+1+accumulate})
-                accumulate+=len(message[i])
+        model = model_class.from_pretrained(model_path, config=config)
+        model.to(args.device)
+        lines = []
+        for m in message:
+            words = list(m)
+            labels = ['O'] * len(words)
+            lines.append({"words": words, "labels": labels})
+        predict_entities = predict(args, model, tokenizer, lines,message,prefix=prefix)
+        entities = []
+        accumulate = 0
+        for i,per_entities in enumerate(predict_entities):
+            node_flag={}
+            for entity in per_entities:
+                node,label = entity[0],entity[1]
+                if node not in node_flag:
+                    index = message[i].find(node)
+                    node_flag[node] = index
+                else:
+                    index = message[i].find(node,node_flag[node]+1)
+                    node_flag[node] = index
+                entities.append({"label":label,"start_offset":index+accumulate,"end_offset":index+len(node)+1+accumulate})
+            accumulate+=len(message[i])
     return entities

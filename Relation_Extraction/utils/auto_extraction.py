@@ -25,7 +25,7 @@ def setup_seed(seed):
 warnings.filterwarnings("ignore")
 setup_seed(44)
 
-def test(net_path,text_list,ent1_list,ent2_list,show_result=False):
+def re_test(net_path,text_list,ent1_list,ent2_list,show_result=False):
     rel2id, id2rel = map_id_rel()
     num_labels = len(id2rel)
     USE_CUDA = torch.cuda.is_available()
