@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from tools.to_test import NER_text_process
-from run_ner_crf import ner_test
+from run_ner_crf_new import ner_test
 from utils.to_test_fine_grad import RE_text_process
 from utils.auto_extraction import re_test
 
