@@ -46,7 +46,7 @@ def re_test(net_path,text_list,ent1_list,ent2_list,show_result=False):
     with torch.no_grad():
         for text,ent1,ent2 in zip(text_list,ent1_list,ent2_list):
             sent = ent1 + ent2+ text
-            tokenizer = BertTokenizer.from_pretrained('bert-base-chinese')
+            tokenizer = BertTokenizer.from_pretrained('prev_trained_model\\bert-base-chinese')
             indexed_tokens = tokenizer.encode(sent, add_special_tokens=True)
             avai_len = len(indexed_tokens)
             while len(indexed_tokens) < max_length:
@@ -66,12 +66,14 @@ def re_test(net_path,text_list,ent1_list,ent2_list,show_result=False):
                 logits = outputs[0] # 保证和旧模型参数的一致性
             else:
                 logits = outputs[1]
-            _, predicted = torch.max(logits.data, 1)
+            data = torch.softmax(logits.data,1)
+            confidence, predicted = torch.max(data, 1)
             result = predicted.cpu().numpy().tolist()[0]
             if show_result:
                 print("Source Text: ",text)
                 print("Entity1: ",ent1," Entity2: ",ent2," Predict Relation: ")
             total+=1
             #print('\n')
-            rel_list.append(id2rel[result])
+            if confidence>0.75:
+                rel_list.append(id2rel[result])
     return rel_list

@@ -18,13 +18,6 @@ def RE_text_process(text,entities):
             ent1_id.append(ent1[2])
             ent2_id.append(ent2[2])
             text_list.append(extract_text)
-            #反向再来一遍
-            ent1_list.append(ent2[0])
-            ent2_list.append(ent1[0])
-            ent1_id.append(ent2[2])
-            ent2_id.append(ent1[2])
-            text_list.append(extract_text)
-
     return ent1_list,ent2_list,text_list,ent1_id,ent2_id
 
 def text_split(text,ent1,ent2):
