@@ -11,3 +11,4 @@ Named_Entity_Recognition/prev_trained_model/bert-base-chinese/pytorch_model.bin
 *.h5
 *.zip
 *.bin
+*.pyc
