@@ -3,7 +3,7 @@ import argparse
 def get_argparse():
     parser = argparse.ArgumentParser()
     # Required parameters
-    parser.add_argument("--task_name", default="cluener", type=str, 
+    parser.add_argument("--task_name", default="ours", type=str, 
                         help="The name of the task to train selected in the list: ")
     parser.add_argument("--data_dir", default=None, type=str, 
                         help="The input data dir. Should contain the training files for the CoNLL-2003 NER task.", )

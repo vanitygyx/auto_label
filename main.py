@@ -9,8 +9,8 @@ app = Flask(__name__)
 @app.route('/ner', methods=['POST'])
 def ner():
     text = request.json.get('text', '')
-    split_text= NER_text_process(text)
-    entities = ner_test(split_text)
+    sub_splite_text,split_text= NER_text_process(text)
+    entities = ner_test(sub_splite_text,split_text)
     return jsonify({'entities': entities})
 
 @app.route('/re', methods=['POST'])

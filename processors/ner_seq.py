@@ -261,10 +261,13 @@ class OursProcessor(DataProcessor):
     
     def get_labels(self):
         """See base class."""
-        return ["X", "B-飞行器", "B-单兵武器", "B-炸弹", "B-装甲车辆", "B-火炮", "B-导弹", "B-舰船舰艇", "B-太空装备", "B-其他武器装备",
-                "I-飞行器", "I-单兵武器", "I-炸弹", "I-装甲车辆", "I-火炮", "I-导弹", "I-舰船舰艇", "I-太空装备", "I-其他武器装备",
-                "S-飞行器", "S-单兵武器", "S-炸弹", "S-装甲车辆", "S-火炮", "S-导弹", "S-舰船舰艇", "S-太空装备", "S-其他武器装备",
-                "O","[START]", "[END]"]
+        return ["X", "B-address", "B-book", "B-company", 'B-game', 'B-government', 'B-movie', 'B-name',
+                'B-organization', 'B-position','B-scene',"I-address",
+                "I-book", "I-company", 'I-game', 'I-government', 'I-movie', 'I-name',
+                'I-organization', 'I-position','I-scene',
+                "S-address", "S-book", "S-company", 'S-game', 'S-government', 'S-movie',
+                'S-name', 'S-organization', 'S-position',
+                'S-scene','O',"[START]", "[END]"]
 
     def _create_examples(self, lines, set_type):
         """Creates examples for the training and dev sets."""
