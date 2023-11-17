@@ -140,7 +140,9 @@ def convert_examples_to_features(examples,label_list,max_seq_length,tokenizer,
             input_mask += [0 if mask_padding_with_zero else 1] * padding_length
             segment_ids += [pad_token_segment_id] * padding_length
             label_ids += [pad_token] * padding_length
-
+        # print(examples)
+        # print(len(label_ids))
+        # print(max_seq_length)
         assert len(input_ids) == max_seq_length
         assert len(input_mask) == max_seq_length
         assert len(segment_ids) == max_seq_length

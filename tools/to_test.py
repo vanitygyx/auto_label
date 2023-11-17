@@ -5,7 +5,8 @@ import re
 def NER_text_process(line):
     pattern = r'(？|\?|!|。|！)'
     text = line
-    sub_splited_text = re.sub(r"\n|\t|\r| ","",text)
+    sub_splited_text = re.sub(r"\s|\t|\r|\n","",text)
+    sub_splited_text = re.sub(r" ","",sub_splited_text)
     #print(splited_text)
     sub_splited_text = re.split(pattern,sub_splited_text)
     splited_text = re.split(pattern,text)

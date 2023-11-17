@@ -9,7 +9,7 @@ import warnings
 import json
 from transformers import BertForSequenceClassification
 import random
-
+from tqdm import tqdm
 
 def get_model(n):
     model = BertForSequenceClassification.from_pretrained('prev_trained_model\\bert-base-chinese',num_labels=n)
@@ -44,7 +44,7 @@ def re_test(net_path,text_list,ent1_list,ent2_list,show_result=False):
     rel_list = []
     total=0
     with torch.no_grad():
-        for text,ent1,ent2 in zip(text_list,ent1_list,ent2_list):
+        for text,ent1,ent2 in tqdm(zip(text_list,ent1_list,ent2_list)):
             sent = ent1 + ent2+ text
             tokenizer = BertTokenizer.from_pretrained('prev_trained_model\\bert-base-chinese')
             indexed_tokens = tokenizer.encode(sent, add_special_tokens=True)
@@ -76,4 +76,5 @@ def re_test(net_path,text_list,ent1_list,ent2_list,show_result=False):
             #print('\n')
             if confidence>0.75:
                 rel_list.append(id2rel[result])
+        print(total)
     return rel_list

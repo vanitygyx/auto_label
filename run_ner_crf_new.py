@@ -151,10 +151,13 @@ def ner_test(message,ori_message):
                 node,label = entity[0],entity[1]
                 if node not in node_flag:
                     index = ori_message[i].find(node)
-                    node_flag[node] = index
+                    if index!=-1:
+                        node_flag[node] = index
                 else:
                     index = ori_message[i].find(node,node_flag[node]+1)
-                    node_flag[node] = index
-                entities.append({"label":label,"start_offset":index+accumulate,"end_offset":index+len(node)+accumulate})
+                    if index!=-1:
+                        node_flag[node] = index
+                if index!=-1:
+                    entities.append({"label":label,"start_offset":index+accumulate,"end_offset":index+len(node)+accumulate})
             accumulate+=len(ori_message[i])
     return entities
