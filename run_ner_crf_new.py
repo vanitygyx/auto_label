@@ -17,6 +17,8 @@ from processors.ner_seq import ner_processors as processors
 from processors.ner_seq import collate_fn
 from metrics.ner_metrics import SeqEntityScore
 from tools.finetuning_argparse_new import get_argparse
+from tqdm import tqdm
+import re
 
 model_path = "outputs"
 
@@ -54,7 +56,7 @@ def predict(args, model, tokenizer, lines, message):
         
         if label_entities:
             for entity in label_entities:
-                out[step].append([message[step][entity[1]:entity[2]+1],entity[0]])
+                out[step].append([message[step][entity[1]:entity[2]+1],entity[0],entity[1]])
     return out
 
 def load_and_cache_examples(args, task, tokenizer, message,data_type='test'):
@@ -146,18 +148,22 @@ def ner_test(message,ori_message):
         entities = []
         accumulate = 0
         for i,per_entities in enumerate(predict_entities):
-            node_flag={}
             for entity in per_entities:
                 node,label = entity[0],entity[1]
-                if node not in node_flag:
-                    index = ori_message[i].find(node)
-                    if index!=-1:
-                        node_flag[node] = index
-                else:
-                    index = ori_message[i].find(node,node_flag[node]+1)
-                    if index!=-1:
-                        node_flag[node] = index
+                start,end = entity[2],entity[2]+len(node)
+                sub_message = re.split(r'(\s|\r)',ori_message[i])
+                message_accum = 0
+                index = start
+                length = len(node)
+                for me in sub_message:
+                    if me not in ['\r','\n','\t'] and not me.isspace():  
+                        message_accum+=len(me)
+                    else:
+                        if message_accum<=start:
+                            index +=1
+                        elif message_accum>start and message_accum<end:
+                            length += 1
                 if index!=-1:
-                    entities.append({"label":label,"start_offset":index+accumulate,"end_offset":index+len(node)+accumulate})
+                    entities.append({"label":label,"start_offset":index+accumulate,"end_offset":index+length+accumulate})
             accumulate+=len(ori_message[i])
     return entities
