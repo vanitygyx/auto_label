@@ -156,7 +156,7 @@ def ner_test(message,ori_message):
                 index = start
                 length = len(node)
                 for me in sub_message:
-                    if me not in ['\r','\n','\t'] and not me.isspace():  
+                    if me not in ['\r','\n','\t','􀦋','􀤋'] and not me.isspace():  
                         message_accum+=len(me)
                     else:
                         if message_accum<=start:
