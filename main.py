@@ -25,7 +25,7 @@ def re():
     return jsonify({'entities': entities,'relations':relations})
 
 @app.route('/ere', methods=['POST'])
-def re():
+def ere():
     text = request.json.get('text', '')
     sub_splite_text,split_text= NER_text_process(text)
     entities = ner_test(sub_splite_text,split_text)
