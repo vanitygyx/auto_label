@@ -9,7 +9,7 @@ def get_argparse():
                         help="The input data dir. Should contain the training files for the CoNLL-2003 NER task.", )
     parser.add_argument("--model_type", default="bert", type=str, 
                         help="Model type selected in the list: ")
-    parser.add_argument("--model_name_or_path", default="prev_trained_model\\bert-base-chinese", type=str, 
+    parser.add_argument("--model_name_or_path", default="prev_trained_model/bert-base-chinese", type=str, 
                         help="Path to pre-trained model or shortcut name selected in the list: " )
     parser.add_argument("--output_dir", default="Named_Entity_Recognition/outputs", type=str,
                         help="The output directory where the model predictions and checkpoints will be written.", )

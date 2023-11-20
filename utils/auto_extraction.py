@@ -12,7 +12,7 @@ import random
 from tqdm import tqdm
 
 def get_model(n):
-    model = BertForSequenceClassification.from_pretrained('prev_trained_model\\bert-base-chinese',num_labels=n)
+    model = BertForSequenceClassification.from_pretrained('prev_trained_model/bert-base-chinese',num_labels=n)
     return model
 
 #设置随机种子
@@ -46,7 +46,7 @@ def re_test(net_path,text_list,ent1_list,ent2_list,show_result=False):
     with torch.no_grad():
         for text,ent1,ent2 in tqdm(zip(text_list,ent1_list,ent2_list)):
             sent = ent1 + ent2+ text
-            tokenizer = BertTokenizer.from_pretrained('prev_trained_model\\bert-base-chinese')
+            tokenizer = BertTokenizer.from_pretrained('prev_trained_model/bert-base-chinese')
             indexed_tokens = tokenizer.encode(sent, add_special_tokens=True)
             avai_len = len(indexed_tokens)
             while len(indexed_tokens) < max_length:
