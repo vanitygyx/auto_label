@@ -36,10 +36,10 @@ def re_test(net_path,text_list,ent1_list,ent2_list,show_result=False):
         net = net.cuda()
     max_length=128
 
-    net=torch.load(net_path)
+    # net=torch.load(net_path)
 
     # For only CPU device
-    #net=torch.load(net_path,map_location=torch.device('cpu') )
+    net=torch.load(net_path,map_location=torch.device('cpu') )
 
     rel_list = []
     total=0
