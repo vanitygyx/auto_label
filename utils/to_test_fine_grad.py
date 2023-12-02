@@ -4,7 +4,7 @@ import re
 pattern1 = r'(？|\?|!|。|！)'
 pattern2 = r"\n|\t|\r"
 pattern3 = r"？|\?|!|。|！"
-max_sentence = 7
+max_sentence = 5
 #处理获得的一列数据text，得到不同实体匹配输入到关系抽取模型中
 def RE_text_process(text,entities):
     ent1_list,ent2_list,text_list,ent1_id,ent2_id, = [],[],[],[],[]

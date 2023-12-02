@@ -18,10 +18,14 @@ def re():
     text = request.json.get('text', '')
     entities = request.json.get('entities', [])
     ent1_list,ent2_list,text_list,ent1_id,ent2_id= RE_text_process(text,entities)
+    
     rel_list = re_test("test.pth",text_list,ent1_list,ent2_list)
     relations =[]
+    record = []
+    print("rel_list:",len(rel_list))
     for i in range(len(rel_list)):
         relations.append({"from_id":ent1_id[i],"to_id":ent2_id[i],"type":rel_list[i]})
+        record.append({"rel":rel_list[i],"ent1":ent1_list[i],"ent2":ent2_list,"text":text_list[i]})
     return jsonify({'entities': entities,'relations':relations})
 
 @app.route('/ere', methods=['POST'])
@@ -37,4 +41,4 @@ def ere():
     return jsonify({'entities': entities,'relations':relations})
 
 if __name__ == '__main__':      
-    app.run(debug=True,host="172.23.240.1")
+    app.run(debug=True,host="172.25.176.1")

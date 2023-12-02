@@ -36,10 +36,14 @@ def re_test(net_path,text_list,ent1_list,ent2_list,show_result=False):
         net = net.cuda()
     max_length=128
 
-    # net=torch.load(net_path)
+    if USE_CUDA:
+        net=torch.load(net_path)
+        
+    else:
+        # For only CPU device
+        net=torch.load(net_path,map_location=torch.device('cpu') )
 
-    # For only CPU device
-    net=torch.load(net_path,map_location=torch.device('cpu') )
+
 
     rel_list = []
     total=0
@@ -73,8 +77,7 @@ def re_test(net_path,text_list,ent1_list,ent2_list,show_result=False):
                 print("Source Text: ",text)
                 print("Entity1: ",ent1," Entity2: ",ent2," Predict Relation: ")
             total+=1
-            #print('\n')
-            if confidence>0.75:
-                rel_list.append(id2rel[result])
+            # if confidence>0.40:
+            rel_list.append(id2rel[result])
         print(total)
     return rel_list
